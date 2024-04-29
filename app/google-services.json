@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "728921139563",
+    "project_id": "micropen-1f729",
+    "storage_bucket": "micropen-1f729.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728921139563:android:475bda0547c3b264abc42e",
+        "android_client_info": {
+          "package_name": "com.sergi.micropen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728921139563-36b9smmm2hi26vu80g186jmmho076o5s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sergi.micropen",
+            "certificate_hash": "3c6fe92cf33e5a5a332ec3d8f79a90b77885755e"
+          }
+        },
+        {
+          "client_id": "728921139563-bbf6jg6pnp2fb4v442l9b36t3laoc2j5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYWbnp2Ean5-Kx0a5pp7uWvHaDg9v31vY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728921139563-bbf6jg6pnp2fb4v442l9b36t3laoc2j5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

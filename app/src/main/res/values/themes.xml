@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MicroPen" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/micropen</item>
+    </style>
+
+    <style name="Theme.MicroPen" parent="Base.Theme.MicroPen" />
+</resources>
