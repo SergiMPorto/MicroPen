@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -14,20 +15,25 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.sergi.micropen.offline.LoginViewModel
 
 
-
-
-class Login : AppCompatActivity() {
+class ºLogin : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private lateinit var facebookLogin : FacebookAuthProvider
+    private lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
         firebaseAuth = FirebaseAuth.getInstance()
+
+
+
 
         val btnLogin: ImageView = findViewById(R.id.login)
         val btnRegistro: TextView = findViewById(R.id.botonRegistro)
@@ -72,6 +78,10 @@ class Login : AppCompatActivity() {
             Toast.makeText(this, "Introduzca contraseña y correo electrónico", Toast.LENGTH_SHORT).show()
             return
         }
+
+        viewModel.signIn(email, password)
+
+
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -85,12 +95,14 @@ class Login : AppCompatActivity() {
                 }
             }
     }
-
+     //Registrase
     private fun create(email: String, password: String) {
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Introduzca contraseña y correo electrónico", Toast.LENGTH_SHORT).show()
             return
         }
+         viewModel.createAccount(email, password)
+
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -104,7 +116,7 @@ class Login : AppCompatActivity() {
                 }
             }
     }
-
+     //Conectarse con google
     private fun signInWithGoogle() {
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
