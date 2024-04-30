@@ -37,7 +37,6 @@ class Grabar : AppCompatActivity() {
     private lateinit var languageArrayList: ArrayList<Idioma>
 
     companion object {
-        //for logs
         private const val TAG = "MAIN_TAG"
     }
 
@@ -68,7 +67,7 @@ class Grabar : AppCompatActivity() {
 
         btnOutLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma de salida", Toast.LENGTH_LONG).show()
-            sourceLanguageChoose()
+            targetLanguageChoose()
         }
 
         btnTranslate.setOnClickListener {
@@ -78,11 +77,12 @@ class Grabar : AppCompatActivity() {
 
         btnEnterLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma de entrada", Toast.LENGTH_LONG).show()
-            targetLanguageChoose()
+            sourceLanguageChoose()
             progreDialog = ProgressDialog(this)
             progreDialog.setTitle("Por favor espere")
             progreDialog.setCanceledOnTouchOutside(false)
         }
+
     }
 
     private fun validateData() {
@@ -112,7 +112,6 @@ class Grabar : AppCompatActivity() {
                 translateText(sourceLangugeText)
             }
             .addOnFailureListener { exception ->
-                // Manejar la falla al descargar el modelo
                 Log.e(TAG, "Error al descargar el modelo de traducción: $exception")
             }
     }
@@ -120,11 +119,9 @@ class Grabar : AppCompatActivity() {
     private fun translateText(text: String) {
         translator.translate(text)
             .addOnSuccessListener { translatedText ->
-                // Mostrar el texto traducido en el TextView
                 edText.text = translatedText
             }
             .addOnFailureListener { exception ->
-                // Manejar la falla en la traducción
                 Log.e(TAG, "Error al traducir el texto: $exception")
             }
     }
@@ -135,8 +132,6 @@ class Grabar : AppCompatActivity() {
 
         for (languageCode in languageCodeList) {
             val languageTitle = Locale(languageCode).displayLanguage
-            Log.d(TAG, "CargandoLenguajes : LanguageCode: $languageCode")
-            Log.d(TAG, "loadAvailableLanguages: languageTitle: $languageTitle")
             val modelLanguage = Idioma(languageCode, languageTitle)
             languageArrayList.add(modelLanguage)
         }
@@ -155,8 +150,6 @@ class Grabar : AppCompatActivity() {
             sourceLanguageCode = languageArrayList[position].languageCode
             sourceLanguageTitle = languageArrayList[position].languageTitle
             btnEnterLanguage.text = sourceLanguageTitle
-            Log.d(TAG, "sourceLanguageChoose : sourceLanguageCode: $sourceLanguageCode")
-            Log.d(TAG, "sourceLanguageChoose : sourceLanguageTitle: $sourceLanguageTitle")
             false
         }
     }
@@ -175,8 +168,6 @@ class Grabar : AppCompatActivity() {
             targetLanguageCode = languageArrayList[position].languageCode
             targetLanguageTitle = languageArrayList[position].languageTitle
             btnOutLanguage.text = targetLanguageTitle
-            Log.d(TAG, "targetLanguageChoose : targetLanguageCode: $targetLanguageCode")
-            Log.d(TAG, "targetLanguageChoose : targetLanguageTitle: $targetLanguageTitle")
             false
         }
     }
@@ -189,12 +180,12 @@ class Grabar : AppCompatActivity() {
             val recognizedText = result?.get(0).toString().trim()
             if (recognizedText.isNotEmpty()) {
                 edText.text = recognizedText
-                startTranlation()
+
             }
         }
     }
 
-    fun askSpeechInput() {
+    private fun askSpeechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "No reconoce la voz", Toast.LENGTH_LONG).show()
         } else {

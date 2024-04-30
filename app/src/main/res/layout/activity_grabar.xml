@@ -47,7 +47,6 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black"
             android:text="@string/traducir" />
-
         <Button
             android:id="@+id/btnEntradaTexto"
             android:layout_width="136dp"
