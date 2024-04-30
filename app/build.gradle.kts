@@ -35,6 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures{
+        dataBinding
+    }
 }
 
 dependencies {
@@ -52,7 +56,6 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.google.android.gms:play-services-auth:21.1.0")
-    implementation("com.google.firebase:firebase-database-ktx:20.3.1")
 
 
     //Drawelayout
@@ -62,14 +65,20 @@ dependencies {
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
-    //Facebook
-    implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
+
+    //GoogleTrasnlate
+
+    implementation ("com.google.mlkit:translate:17.0.2")
+
+
+
 }
+
+
 
 
 // Firebase BOM
 dependencies {
-    implementation("androidx.activity:activity:1.8.0")
     implementation(platform("com.google.firebase:firebase-bom:28.3.1"))
 }
 

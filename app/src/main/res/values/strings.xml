@@ -5,5 +5,8 @@
     <string name="Login">Login</string>
     <string name="default_web_client_id">YOUR_DEFAULT_WEB_CLIENT_ID_HERE</string>
     <string name="recuperar">Recuperar</string>
+    <string name="traducir">Traducir</string>
+    <string name="idioma_de_entrada">Idioma entrada</string>
+    <string name="idioma_salida">Idioma salida</string>
 
 </resources>
