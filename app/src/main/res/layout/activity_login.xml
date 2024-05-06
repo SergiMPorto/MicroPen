@@ -7,42 +7,42 @@
     tools:context=".Login"
     android:background="@color/micropen">
 
+
     <ImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/email"
+        android:layout_marginBottom="32dp"
         android:src="@drawable/iconomicropen"
-        android:layout_marginBottom="70dp"/>
-
+        app:layout_constraintBottom_toTopOf="@id/email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="180dp"
         android:background="@color/white"
         android:gravity="center"
         android:hint="Email"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.612"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <EditText
         android:id="@+id/password"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:background="@color/white"
         android:gravity="center"
         android:hint="Password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.612"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/email" />
 
@@ -104,16 +104,16 @@
         app:layout_constraintTop_toBottomOf="@id/login" />
 
 
-    <ImageView
-        android:id="@+id/facebook"
-        android:layout_width="268dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="200dp"
-        android:src="@drawable/facebooklook"
+    <!-- Login con Facebook -->
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_buttonFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="104dp"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.565"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/login" />
+        app:layout_constraintTop_toBottomOf="@id/loginGoogle" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

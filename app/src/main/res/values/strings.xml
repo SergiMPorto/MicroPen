@@ -9,4 +9,9 @@
     <string name="idioma_de_entrada">Idioma entrada</string>
     <string name="idioma_salida">Idioma salida</string>
 
+    <string name="facebook_client_token">56789</string>
+    <string name="facebook_app_id">395820610028538</string>
+    <string name="fb_login_protocol_scheme">fb395820610028538</string>
+
+
 </resources>

@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
     id("com.google.gms.google-services")
 }
 
@@ -28,15 +27,17 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
 
-    buildFeatures{
+    buildFeatures {
         dataBinding
     }
 }
@@ -51,37 +52,23 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // Firebase
-    implementation("com.google.firebase:firebase-firestore-ktx:24.11.1")
-    implementation("com.google.firebase:firebase-auth-ktx:21.0.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation(platform("com.google.firebase:firebase-bom:28.3.1"))
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth:21.1.0")
 
-
     //Drawelayout
-
     implementation("de.hdodenhof:circleimageview:3.1.0")
-
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
+    //GoogleTranslate
+    implementation("com.google.mlkit:translate:17.0.2")
 
-    //GoogleTrasnlate
-
-    implementation ("com.google.mlkit:translate:17.0.2")
+    //Facebook
+    implementation ("com.facebook.android:facebook-login:latest.release")
+    implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
 
 
 
 }
-
-
-
-
-// Firebase BOM
-dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:28.3.1"))
-}
-
-
-
-

@@ -1,26 +1,19 @@
 package com.sergi.micropen
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 class SplashMicroPen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash_micro_pen)
 
-            super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_splash_micro_pen)
-
-            run()
-        }
-
-        @SuppressLint("SuspiciousIndentation")
-        fun run(){
-            val intent = Intent(this, Login::class.java)
-            startActivity(intent)
-        }
-
-
-
-
+        run()
     }
+
+    fun run() {
+        val intent = Intent(this, Login::class.java)
+        startActivity(intent)
+    }
+}

@@ -16,18 +16,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MicroPen"
         tools:targetApi="31">
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
+
+
+
+
+
         <activity
             android:name=".Perfil"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.Perfil"/>
         <activity
             android:name=".Recuperar"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.Recuperar"/>
         <activity
             android:name=".Login"
-            android:exported="false"></activity>
+            android:exported="false"
+            android:theme="@style/AppTheme.Login"></activity>
+
         <activity
             android:name=".SplashMicroPen"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,13 +49,16 @@
         </activity>
         <activity
             android:name=".Escribir"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.Escribir"/>
         <activity
             android:name=".Grabar"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.Grabar"/>
         <activity
             android:name=".Home"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/AppTheme.Home"/>
     </application>
 
 </manifest>
