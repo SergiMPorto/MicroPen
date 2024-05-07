@@ -191,7 +191,7 @@ private fun signInWithFacebook() {
             }
         }
     }
-
+//Facebook
     private fun handleFacebookAccessToken(token: AccessToken) {
         val credential = FacebookAuthProvider.getCredential(token.token)
         Log.d("FacebookToken", token.token) // Imprimir el token en la consola
