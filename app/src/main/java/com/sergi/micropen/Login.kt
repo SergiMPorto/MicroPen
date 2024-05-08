@@ -1,5 +1,6 @@
 package com.sergi.micropen
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,10 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.TranslatorOptions
 import com.sergi.micropen.offline.LoginViewModel
 
 
@@ -112,6 +117,40 @@ private fun signInWithFacebook() {
         }
     })
 }
+
+    private fun handleSuccessfulSignIn() {
+        downloadLanguageModels()
+    }
+
+    private fun downloadLanguageModels() {
+        //Obtner idiomas
+        val languageCodeList = TranslateLanguage.getAllLanguages()
+
+        //Iniciar translaitor
+
+        for( languageCode in languageCodeList){
+            val translatorOptions = TranslatorOptions.Builder()
+                .setSourceLanguage(languageCode)
+                .build()
+            val translator = Translation.getClient(translatorOptions)
+
+            val downloadConditions = DownloadConditions.Builder()
+                .requireWifi()
+                .build()
+
+        //Descargar modelo
+            translator.downloadModelIfNeeded(downloadConditions)
+                .addOnSuccessListener {
+                    // Modelo descargado con éxito
+                    Log.d(TAG, "Modelo de traducción para $languageCode descargado con éxito")
+                }
+                .addOnFailureListener { exception ->
+                    // Error al descargar el modelo
+                    Log.e(TAG, "Error al descargar el modelo de traducción para $languageCode: $exception")
+                }
+        }
+    }
+
     private fun signIn(email: String, password: String) {
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Introduzca contraseña y correo electrónico", Toast.LENGTH_SHORT).show()

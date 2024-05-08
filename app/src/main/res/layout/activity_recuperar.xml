@@ -11,19 +11,19 @@
     <TextView
         android:layout_width="250dp"
         android:layout_height="35dp"
-        android:layout_marginBottom="25dp"
-        android:fontFamily="@font/groteck"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/bon"
         android:text="Introduce tu email"
         android:textAlignment="center"
 
-        android:textColorHint="@color/black"
+        android:textColorHint="@color/texto"
         android:textSize="25sp"
         android:textStyle="bold"
 
         app:layout_constraintBottom_toTopOf="@id/emailR"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
-
 
     <EditText
         android:id="@+id/emailR"
@@ -31,12 +31,13 @@
         android:layout_height="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="248dp"
+        android:layout_marginRight="50dp"
         android:background="@color/white"
         android:gravity="center"
         android:hint="Email"
         app:layout_constraintEnd_toEndOf="parent"
+        android:fontFamily="@font/bon"
         app:layout_constraintHorizontal_bias="0.279"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

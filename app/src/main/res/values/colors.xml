@@ -7,12 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="micropen">#686C73</color>
+    <color name="micropen">#DADFE5</color>
     <color name="com_facebook_button_background_color_focused">#0090FF</color>
     <color name="com_facebook_button_border_color_focused">#0090FF</color>
     <color name="com_facebook_button_send_background_color_pressed">#0090FF</color>
     <color name="com_facebook_button_send_background_color">#0090FF</color>
     <color name="com_facebook_button_background_color_focused_disabled">#0090FF</color>
+    <color name="botones">#5469FA</color>
+    <color name="texto">#464E51</color>
 
 
 </resources>

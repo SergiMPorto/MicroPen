@@ -1,16 +1,16 @@
 package com.sergi.micropen
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class Recuperar : AppCompatActivity() {
-    private lateinit var restablecer : Button
+    private lateinit var restablecer : ImageButton
     private lateinit var email : EditText
     private lateinit var firebaseAuth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,14 +22,17 @@ class Recuperar : AppCompatActivity() {
 
         firebaseAuth = Firebase.auth
 
-        restablecer.setOnClickListener { }
+        restablecer.setOnClickListener {
+            enviarPassword()
+        }
 
 
     }
 
-    private fun enviarPassword(email:String)
+    private fun enviarPassword()
     {
-        firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener {
+        val userEmail = email.text.toString()
+        firebaseAuth.sendPasswordResetEmail(userEmail).addOnCompleteListener {
                 task ->
             if(task.isSuccessful){
                 Toast.makeText(baseContext, "Correo de Cambio de Contraseña Envidado", Toast.LENGTH_LONG).show()

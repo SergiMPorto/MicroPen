@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -31,14 +32,15 @@ class Escribir : AppCompatActivity() {
     private lateinit var btnEnterLanguage: Button
     private lateinit var btnOutLanguage: Button
     private lateinit var languageArrayList: ArrayList<Idioma>
-    private var sourceLanguageCode = "es"
-    private var sourceLanguageTitle = "Español"
-    private var targetLanguageCode = "en"
-    private var targetLanguageTitle = "Inglés"
+    private var sourceLanguageCode = "es"   //Codigo del idioma de entrada
+    private var sourceLanguageTitle = "Español"  // Codigo del idioma seleccionado
+    private var targetLanguageCode = "en"   //Idioma de salida seleccionado idioma al que se traducirá
+    private var targetLanguageTitle = "Inglés" //almacena el idioma de salida seleccionado
     private lateinit var translatorOptions: TranslatorOptions
     private lateinit var translator: Translator
     private lateinit var progreDialog: ProgressDialog
     private var sourceLangugeText = ""
+    private lateinit var btnSwitchLanguagesWriter: ImageView
 
     companion object {
         private const val TAG = "MAIN_TAG"
@@ -82,6 +84,7 @@ class Escribir : AppCompatActivity() {
         btnTranslate = findViewById(R.id.btnTraducirText)
         btnEnterLanguage = findViewById(R.id.btnEnterTextText)
         btnOutLanguage = findViewById(R.id.btnOutTextText)
+        btnSwitchLanguagesWriter = findViewById(R.id.btnSwitchLanguagesWriter)
 
         loadAvailableLanguages()
 
@@ -103,6 +106,26 @@ class Escribir : AppCompatActivity() {
             progreDialog.setTitle("Por favor espere")
             progreDialog.setCanceledOnTouchOutside(false)
         }
+
+        //Change language
+        btnSwitchLanguagesWriter.setOnClickListener {
+            chooseLanguage()
+        }
+    }
+
+
+    //Elegir lenguaje
+    private fun chooseLanguage() {
+        val tempLanguageCode = sourceLanguageCode
+        val tempLanguageTitle = sourceLanguageTitle
+
+        sourceLanguageCode =  targetLanguageCode
+        sourceLanguageTitle = targetLanguageTitle
+        targetLanguageCode = tempLanguageCode
+        targetLanguageTitle = tempLanguageTitle
+
+        btnEnterLanguage.text = sourceLanguageTitle
+        btnOutLanguage.text = targetLanguageTitle
     }
 
     private fun validateData() {

@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
@@ -48,6 +49,7 @@ class Grabar : AppCompatActivity() {
     private lateinit var translator: Translator
     private lateinit var progreDialog: ProgressDialog
     private var sourceLangugeText = ""
+    private lateinit var btnSwitchLanguage: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +60,7 @@ class Grabar : AppCompatActivity() {
         btnOutLanguage = findViewById(R.id.btnSalidaTexto)
         edText = findViewById(R.id.textoEntrada)
         bSpeak = findViewById(R.id.hablar)
+        btnSwitchLanguage = findViewById(R.id.btnSwitchLanguages)
 
         loadAvailableLanguages()
 
@@ -83,7 +86,24 @@ class Grabar : AppCompatActivity() {
             progreDialog.setCanceledOnTouchOutside(false)
         }
 
+        btnSwitchLanguage.setOnClickListener {
+            switchLanguage()
+        }
+
     }
+
+    private fun switchLanguage() {
+        val tempLanguageCode = sourceLanguageCode
+        val tempLanguageTitle = sourceLanguageTitle
+        sourceLanguageCode = targetLanguageCode
+        sourceLanguageTitle = targetLanguageTitle
+        targetLanguageCode = tempLanguageCode
+        targetLanguageTitle = tempLanguageTitle
+
+        btnEnterLanguage.text = sourceLanguageTitle
+        btnOutLanguage.text = targetLanguageTitle
+    }
+
 
     private fun validateData() {
         sourceLangugeText = edText.text.toString().trim()
