@@ -41,6 +41,7 @@ class Escribir : AppCompatActivity() {
     private lateinit var progreDialog: ProgressDialog
     private var sourceLangugeText = ""
     private lateinit var btnSwitchLanguagesWriter: ImageView
+    private lateinit var languageManager: LanguageManager
 
     companion object {
         private const val TAG = "MAIN_TAG"
@@ -111,6 +112,9 @@ class Escribir : AppCompatActivity() {
         btnSwitchLanguagesWriter.setOnClickListener {
             chooseLanguage()
         }
+        //Llamar a lenguajes
+        languageManager = LanguageManager(this)
+        languageManager.downloadAllLanguages()
     }
 
 

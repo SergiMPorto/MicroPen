@@ -36,6 +36,7 @@ class Grabar : AppCompatActivity() {
     lateinit var btnOutLanguage: Button
     lateinit var edText: TextView
     private lateinit var languageArrayList: ArrayList<Idioma>
+    private lateinit var languageManager : LanguageManager
 
     companion object {
         private const val TAG = "MAIN_TAG"
@@ -64,20 +65,25 @@ class Grabar : AppCompatActivity() {
 
         loadAvailableLanguages()
 
+        //Descargar lenguajes
+
+        languageManager = LanguageManager(this)
+        languageManager.downloadAllLanguages()
+
         bSpeak.setOnClickListener {
             askSpeechInput()
         }
-
+          //Traducción idioma de salida
         btnOutLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma de salida", Toast.LENGTH_LONG).show()
             targetLanguageChoose()
         }
-
+          //Botón traducción
         btnTranslate.setOnClickListener {
             Toast.makeText(this, "Traducir", Toast.LENGTH_LONG).show()
             validateData()
         }
-
+         //Traducción idioma de entrada
         btnEnterLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma de entrada", Toast.LENGTH_LONG).show()
             sourceLanguageChoose()
@@ -85,13 +91,15 @@ class Grabar : AppCompatActivity() {
             progreDialog.setTitle("Por favor espere")
             progreDialog.setCanceledOnTouchOutside(false)
         }
-
+             //Invertir opciones de traducción
         btnSwitchLanguage.setOnClickListener {
             switchLanguage()
         }
 
     }
 
+
+    //Invertir opciones de traducción
     private fun switchLanguage() {
         val tempLanguageCode = sourceLanguageCode
         val tempLanguageTitle = sourceLanguageTitle
@@ -99,12 +107,11 @@ class Grabar : AppCompatActivity() {
         sourceLanguageTitle = targetLanguageTitle
         targetLanguageCode = tempLanguageCode
         targetLanguageTitle = tempLanguageTitle
-
         btnEnterLanguage.text = sourceLanguageTitle
         btnOutLanguage.text = targetLanguageTitle
     }
 
-
+     //Ver si  hay texto
     private fun validateData() {
         sourceLangugeText = edText.text.toString().trim()
 
@@ -114,7 +121,7 @@ class Grabar : AppCompatActivity() {
             startTranlation()
         }
     }
-
+   //Empezar traducción
     private fun startTranlation() {
         translatorOptions = TranslatorOptions.Builder()
             .setSourceLanguage(sourceLanguageCode)
@@ -135,7 +142,7 @@ class Grabar : AppCompatActivity() {
                 Log.e(TAG, "Error al descargar el modelo de traducción: $exception")
             }
     }
-
+   //Traducción
     private fun translateText(text: String) {
         translator.translate(text)
             .addOnSuccessListener { translatedText ->
@@ -145,7 +152,7 @@ class Grabar : AppCompatActivity() {
                 Log.e(TAG, "Error al traducir el texto: $exception")
             }
     }
-
+     //Cargar los lenguajes
     private fun loadAvailableLanguages() {
         languageArrayList = ArrayList()
         val languageCodeList = TranslateLanguage.getAllLanguages()
@@ -156,7 +163,7 @@ class Grabar : AppCompatActivity() {
             languageArrayList.add(modelLanguage)
         }
     }
-
+      //Botón de selección de lenguaje de entrada.
     private fun sourceLanguageChoose() {
         val popupMenu = PopupMenu(this, btnEnterLanguage)
 
@@ -173,7 +180,7 @@ class Grabar : AppCompatActivity() {
             false
         }
     }
-
+      //Botón de salida de idioma
     private fun targetLanguageChoose() {
         val popupMenu = PopupMenu(this, btnOutLanguage)
 
@@ -191,7 +198,7 @@ class Grabar : AppCompatActivity() {
             false
         }
     }
-
+      //Pasar audio a texto
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -204,7 +211,7 @@ class Grabar : AppCompatActivity() {
             }
         }
     }
-
+    //Activar el audio
     private fun askSpeechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "No reconoce la voz", Toast.LENGTH_LONG).show()

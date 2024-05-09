@@ -59,6 +59,8 @@
             android:name=".Home"
             android:exported="true"
             android:theme="@style/AppTheme.Home"/>
+
+
     </application>
 
 </manifest>

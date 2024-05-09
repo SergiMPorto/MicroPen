@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.1")
+    }
+}
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -69,6 +78,8 @@ dependencies {
     implementation ("com.facebook.android:facebook-login:latest.release")
     implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
 
-
+    //Coroutines
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.x.x")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
 }

@@ -1,6 +1,6 @@
 package com.sergi.micropen
 
-import android.content.ContentValues.TAG
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -25,10 +25,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.Translation
-import com.google.mlkit.nl.translate.TranslatorOptions
 import com.sergi.micropen.offline.LoginViewModel
 
 
@@ -55,12 +51,9 @@ class Login : AppCompatActivity() {
         // Inicializar el SDK de Facebook
         FacebookSdk.sdkInitialize(applicationContext)
 
-
-
         val btnLogin: ImageView = findViewById(R.id.login)
         val btnRegistro: TextView = findViewById(R.id.botonRegistro)
         val recuperar: TextView= findViewById(R.id.recuperar)
-
 
         btnLogin.setOnClickListener {
             signIn(
@@ -100,55 +93,27 @@ class Login : AppCompatActivity() {
             signInWithFacebook()
         }
     }
-//facebook
-private fun signInWithFacebook() {
-    LoginManager.getInstance().logInWithReadPermissions(this, listOf("email", "public_profile"))
-    LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-        override fun onSuccess(loginResult: LoginResult) {
-            handleFacebookAccessToken(loginResult.accessToken)
-        }
 
-        override fun onCancel() {
-            Toast.makeText(this@Login, "Inicio de sesión con Facebook cancelado", Toast.LENGTH_SHORT).show()
-        }
+    //facebook
+    private fun signInWithFacebook() {
+        LoginManager.getInstance().logInWithReadPermissions(this, listOf("email", "public_profile"))
+        LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+            override fun onSuccess(loginResult: LoginResult) {
+                handleFacebookAccessToken(loginResult.accessToken)
+            }
 
-        override fun onError(error: FacebookException) {
-            Toast.makeText(this@Login, "Error al iniciar sesión con Facebook: ${error.message}", Toast.LENGTH_SHORT).show()
-        }
-    })
-}
+            override fun onCancel() {
+                Toast.makeText(this@Login, "Inicio de sesión con Facebook cancelado", Toast.LENGTH_SHORT).show()
+            }
 
-    private fun handleSuccessfulSignIn() {
-        downloadLanguageModels()
+            override fun onError(error: FacebookException) {
+                Toast.makeText(this@Login, "Error al iniciar sesión con Facebook: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
-    private fun downloadLanguageModels() {
-        //Obtner idiomas
-        val languageCodeList = TranslateLanguage.getAllLanguages()
-
-        //Iniciar translaitor
-
-        for( languageCode in languageCodeList){
-            val translatorOptions = TranslatorOptions.Builder()
-                .setSourceLanguage(languageCode)
-                .build()
-            val translator = Translation.getClient(translatorOptions)
-
-            val downloadConditions = DownloadConditions.Builder()
-                .requireWifi()
-                .build()
-
-        //Descargar modelo
-            translator.downloadModelIfNeeded(downloadConditions)
-                .addOnSuccessListener {
-                    // Modelo descargado con éxito
-                    Log.d(TAG, "Modelo de traducción para $languageCode descargado con éxito")
-                }
-                .addOnFailureListener { exception ->
-                    // Error al descargar el modelo
-                    Log.e(TAG, "Error al descargar el modelo de traducción para $languageCode: $exception")
-                }
-        }
+    private fun handleSuccessfulSignIn() {
+        // No se necesita descargar los modelos de idioma aquí
     }
 
     private fun signIn(email: String, password: String) {
@@ -159,12 +124,12 @@ private fun signInWithFacebook() {
 
         viewModel.signIn(email, password)
 
-
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val user = firebaseAuth.currentUser
                     Toast.makeText(this, "Bienvenido", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,"Descargando idiomas", Toast.LENGTH_LONG).show()
                     val intent = Intent(this, Home::class.java)
                     startActivity(intent)
                     finish()
@@ -173,13 +138,14 @@ private fun signInWithFacebook() {
                 }
             }
     }
-     //Registrase
+
+    //Registrarse
     private fun create(email: String, password: String) {
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Introduzca contraseña y correo electrónico", Toast.LENGTH_SHORT).show()
             return
         }
-         viewModel.createAccount(email, password)
+        viewModel.createAccount(email, password)
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
@@ -194,7 +160,8 @@ private fun signInWithFacebook() {
                 }
             }
     }
-     //Conectarse con google
+
+    //Conectarse con google
     private fun signInWithGoogle() {
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -230,7 +197,8 @@ private fun signInWithFacebook() {
             }
         }
     }
-//Facebook
+
+    //Facebook
     private fun handleFacebookAccessToken(token: AccessToken) {
         val credential = FacebookAuthProvider.getCredential(token.token)
         Log.d("FacebookToken", token.token) // Imprimir el token en la consola
@@ -247,7 +215,6 @@ private fun signInWithFacebook() {
                 }
             }
     }
-
 
     companion object {
         private const val RC_SIGN_IN = 9001
