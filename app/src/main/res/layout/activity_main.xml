@@ -39,7 +39,7 @@
             android:layout_width="190dp"
             android:layout_height="162dp"
             android:layout_marginBottom="364dp"
-            android:src="@drawable/microfono"
+            android:src="@drawable/micr"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"

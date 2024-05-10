@@ -1,4 +1,4 @@
-// En un nuevo archivo LanguageManager.kt
+
 package com.sergi.micropen
 
 import android.app.ProgressDialog
@@ -29,7 +29,7 @@ class LanguageManager(private val context: Context) {
 
     private fun downloadLanguage(languageCode: String) {
         val options = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setSourceLanguage(TranslateLanguage.SPANISH)
             .setTargetLanguage(languageCode)
             .build()
 

@@ -4,9 +4,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     tools:ignore="MissingDefaultResource">
     <gradient
-        android:startColor="@color/black"
+        android:startColor="@color/botones"
+        android:endColor="@color/botones"
 
-        android:angle="0"/>
-    <corners android:radius="65dp"/>
+        android:angle="80"/>
+    <corners android:radius="50dp"/>
 
 </shape>

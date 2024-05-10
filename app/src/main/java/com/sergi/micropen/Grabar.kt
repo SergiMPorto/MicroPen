@@ -216,11 +216,12 @@ class Grabar : AppCompatActivity() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "No reconoce la voz", Toast.LENGTH_LONG).show()
         } else {
-            val i = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Di algo")
-            startActivityForResult(i, RQ_SPEECH_REC)
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-ES")
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Di algo")
+            startActivityForResult(intent, RQ_SPEECH_REC)
         }
     }
+
 }

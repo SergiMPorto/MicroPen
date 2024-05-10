@@ -46,7 +46,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/botones"
-            android:text="@string/traducir" />
+            android:text="@string/traducir"
+
+            android:elevation="8dp"/>
         <Button
             android:id="@+id/btnEntradaTexto"
             android:layout_width="136dp"
@@ -54,12 +56,13 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="15dp"
             android:backgroundTint="@color/botones"
-            android:text="@string/idioma_de_entrada" />
+            android:text="@string/idioma_de_entrada"
+            android:elevation="8dp"/>
         <ImageView
             android:id="@+id/btnSwitchLanguages"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/flechas"
+            android:src="@drawable/flechaarribaabajo"
             />
 
         <Button
@@ -69,7 +72,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="15dp"
             android:backgroundTint="@color/botones"
-            android:text="@string/idioma_salida" />
+            android:text="@string/idioma_salida"
+            android:elevation="8dp"/>
 
 
     </LinearLayout>
