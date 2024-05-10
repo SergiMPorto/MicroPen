@@ -11,13 +11,14 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 class LanguageManager(private val context: Context) {
     private val languageCodeList = TranslateLanguage.getAllLanguages()
     private val totalLanguages = languageCodeList.size
-    private var languagesDownloaded = 0  // Se inicializa el contador de idiomas descargados
-        private val progressDialog = ProgressDialog(context)
-
+    private var languagesDownloaded = 0
+    private val progressDialog = ProgressDialog(context)
 
     init {
         progressDialog.setMessage("Descargando paquetes de idioma...")
         progressDialog.setCancelable(false)
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        progressDialog.max = totalLanguages
         progressDialog.show()
     }
 
@@ -45,6 +46,7 @@ class LanguageManager(private val context: Context) {
     private fun onLanguageDownloaded(success: Boolean, languageCode: String) {
         if (success) {
             languagesDownloaded++
+            progressDialog.progress = languagesDownloaded
             if (languagesDownloaded == totalLanguages) {
                 progressDialog.dismiss()
                 Toast.makeText(context, "Todos los paquetes de idioma se han descargado", Toast.LENGTH_SHORT).show()

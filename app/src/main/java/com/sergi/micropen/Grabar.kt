@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +52,7 @@ class Grabar : AppCompatActivity() {
     private lateinit var progreDialog: ProgressDialog
     private var sourceLangugeText = ""
     private lateinit var btnSwitchLanguage: ImageView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +65,17 @@ class Grabar : AppCompatActivity() {
         bSpeak = findViewById(R.id.hablar)
         btnSwitchLanguage = findViewById(R.id.btnSwitchLanguages)
 
+
+
+
         loadAvailableLanguages()
 
         //Descargar lenguajes
 
+
         languageManager = LanguageManager(this)
         languageManager.downloadAllLanguages()
+
 
         bSpeak.setOnClickListener {
             askSpeechInput()

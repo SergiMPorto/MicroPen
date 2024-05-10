@@ -9,6 +9,7 @@ import android.view.Menu
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -26,6 +27,7 @@ class Escribir : AppCompatActivity() {
     private lateinit var textEscrito: EditText
     private lateinit var textToSpeech: TextToSpeech
     private lateinit var btnWrite: Button
+    private lateinit var progressBar : ProgressBar
 
     //variables translater
     private lateinit var btnTranslate: Button
@@ -54,8 +56,13 @@ class Escribir : AppCompatActivity() {
 
         //Logícal text---Audio
 
+        languageManager = LanguageManager(this)
+        languageManager.downloadAllLanguages()
+
+
         textEscrito = findViewById(R.id.TextoEscrito)
         btnWrite = findViewById(R.id.button)
+
 
         textToSpeech = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -113,7 +120,7 @@ class Escribir : AppCompatActivity() {
             chooseLanguage()
         }
         //Llamar a lenguajes
-        languageManager = LanguageManager(this)
+
         languageManager.downloadAllLanguages()
     }
 
