@@ -22,8 +22,9 @@ import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import com.sergi.micropen.idioma.Idioma
+import java.text.Normalizer
 import java.util.Locale
-
+import java.util.regex.Pattern
 
 
 class Grabar : AppCompatActivity() {
@@ -209,15 +210,22 @@ class Grabar : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
-            val result = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            val recognizedText = result?.get(0).toString().trim()
-            if (recognizedText.isNotEmpty()) {
-                edText.text = recognizedText
 
-            }
-        }
-    }
+// En tu función onActivityResult:
+                  if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
+                      val result = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                      if (result != null && result.isNotEmpty()) {
+                          val recognizedText = result[0] // Esto es más seguro, ya que evitas el toString() innecesario.
+                          Log.d("RecognizedSpeech", "Original: $recognizedText")
+                          val normalizedText = Normalizer.normalize(recognizedText, Normalizer.Form.NFD)
+                          val pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
+                          val cleanText = pattern.matcher(normalizedText).replaceAll("") // Limpia el texto si quieres eliminar diacríticos.
+
+                          edText.text = normalizedText
+                      }
+                  }
+
+      }
     //Activar el audio
     private fun askSpeechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
