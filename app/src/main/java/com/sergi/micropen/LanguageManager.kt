@@ -9,8 +9,31 @@ import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 
 class LanguageManager(private val context: Context) {
-    private val languageCodeList = TranslateLanguage.getAllLanguages()
-    private val totalLanguages = languageCodeList.size
+    private val autoDownloadLanguageCodeList = listOf(
+        TranslateLanguage.ARABIC,
+        TranslateLanguage.ENGLISH,
+        TranslateLanguage.CHINESE,
+        TranslateLanguage.JAPANESE,
+        TranslateLanguage.GERMAN,
+        TranslateLanguage.FRENCH,
+        TranslateLanguage.ITALIAN,
+        TranslateLanguage.SPANISH,
+        TranslateLanguage.PORTUGUESE,
+        TranslateLanguage.NORWEGIAN,
+        TranslateLanguage.GALICIAN,
+        TranslateLanguage.RUSSIAN,
+        TranslateLanguage.CATALAN,
+        TranslateLanguage.FINNISH,
+        TranslateLanguage.GREEK,
+        TranslateLanguage.BULGARIAN,
+        TranslateLanguage.HUNGARIAN,
+        TranslateLanguage.DUTCH,
+        TranslateLanguage.SWEDISH,
+        TranslateLanguage.DANISH,
+        TranslateLanguage.POLISH,
+        TranslateLanguage.ROMANIAN
+    )
+    private val totalLanguages = autoDownloadLanguageCodeList.size
     private var languagesDownloaded = 0
     private val progressDialog = ProgressDialog(context)
 
@@ -23,12 +46,12 @@ class LanguageManager(private val context: Context) {
     }
 
     fun downloadAllLanguages() {
-        languageCodeList.forEach { languageCode ->
+        autoDownloadLanguageCodeList.forEach { languageCode ->
             downloadLanguage(languageCode)
         }
     }
 
-    private fun downloadLanguage(languageCode: String) {
+    fun downloadLanguage(languageCode: String) {
         val options = TranslatorOptions.Builder()
             .setSourceLanguage(TranslateLanguage.SPANISH)
             .setTargetLanguage(languageCode)
@@ -54,5 +77,9 @@ class LanguageManager(private val context: Context) {
         } else {
             Toast.makeText(context, "Error al descargar el paquete de $languageCode", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun getAutoDownloadLanguages(): List<String>{
+        return autoDownloadLanguageCodeList
     }
 }
