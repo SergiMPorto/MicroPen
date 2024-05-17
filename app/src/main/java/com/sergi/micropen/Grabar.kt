@@ -8,6 +8,7 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -26,17 +27,17 @@ import java.text.Normalizer
 import java.util.Locale
 import java.util.regex.Pattern
 
-
 class Grabar : AppCompatActivity() {
-    var RQ_SPEECH_REC = 102
-    lateinit var bSpeak: ImageButton
-    lateinit var btnTranslate: Button
-    lateinit var btnEnterLanguage: Button
-    lateinit var btnOutLanguage: Button
-    lateinit var edText: TextView
+    private val RQ_SPEECH_REC = 102
+    private lateinit var bSpeak: ImageButton
+    private lateinit var btnTranslate: Button
+    private lateinit var btnEnterLanguage: Button
+    private lateinit var btnOutLanguage: Button
+    private lateinit var edText: TextView
     private lateinit var mainLanguageList: ArrayList<Idioma>
     private lateinit var additionalLanguageList: ArrayList<Idioma>
     private lateinit var languageManager: LanguageManager
+    private val REQUEST_CODE_SPEECH_INPUT = 100
 
     companion object {
         private const val TAG = "MAIN_TAG"
@@ -58,10 +59,7 @@ class Grabar : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_grabar)
 
-
-        //Llamar a la clase
-        languageManager = LanguageManager(this)
-//Iniciar variables
+        // Inicializar variables
         btnTranslate = findViewById(R.id.btnTraducir)
         btnEnterLanguage = findViewById(R.id.btnEntradaTexto)
         btnOutLanguage = findViewById(R.id.btnSalidaTexto)
@@ -70,17 +68,15 @@ class Grabar : AppCompatActivity() {
         btnSwitchLanguage = findViewById(R.id.btnSwitchLanguages)
         btnDownloadLanguage = findViewById(R.id.btnDownloadLanguage)
 
-
-        //LLamar métodos para cargar los lenguajes predeterminados y los adiccionales
+        // Llamar métodos para cargar los lenguajes predeterminados y los adicionales
         loadMainLanguages()
         loadAdditionalLanguages()
 
-
         // Descargar lenguajes
-        languageManager.downloadAllLanguages()
+        languageManager = LanguageManager(this)
 
 
-        //Listeners
+        // Listeners
         bSpeak.setOnClickListener {
             askSpeechInput()
         }
@@ -111,10 +107,18 @@ class Grabar : AppCompatActivity() {
             Toast.makeText(this, "Elige idioma para descargar", Toast.LENGTH_LONG).show()
             downloadLanguageChoose()
         }
+
+        //Inicializar progressbar
+        // Inicializar el ProgressBar
+        progressBar = findViewById(R.id.progressBar)
+        progressBar.max = 100
+        progressBar.progress = 0
+
+        languageManager = LanguageManager(this)
     }
-//agrega los idiomas disponibles siempre
+
     private fun loadMainLanguages() {
-        //Idiomas predeterminados que se van a descargar
+        // Idiomas predeterminados que se van a descargar
         mainLanguageList = arrayListOf(
             Idioma(TranslateLanguage.ARABIC, Locale(TranslateLanguage.ARABIC).displayLanguage),
             Idioma(TranslateLanguage.ENGLISH, Locale(TranslateLanguage.ENGLISH).displayLanguage),
@@ -141,8 +145,6 @@ class Grabar : AppCompatActivity() {
         )
     }
 
-
-    //Cargar lista de idiomas no predeterminados
     private fun loadAdditionalLanguages() {
         additionalLanguageList = ArrayList()
         val allLanguageCodeList = TranslateLanguage.getAllLanguages()
@@ -157,8 +159,26 @@ class Grabar : AppCompatActivity() {
         }
     }
 
+    private fun downloadAllLanguages() {
+        progressBar.visibility = View.VISIBLE
 
-    //Elección del idioma y cargarlo en los botones de idioma de entrada de idioma de salida
+        languageManager.downloadAllLanguages(
+            { success, downloadedLanguages ->
+                if (success) {
+                    if (downloadedLanguages == languageManager.getAutoDownloadLanguages().size) {
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(this, "Todos los paquetes de idioma se han descargado", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Error al descargar los paquetes de idioma", Toast.LENGTH_SHORT).show()
+                }
+            },
+            { progress ->
+                progressBar.progress = progress
+            }
+        )
+    }
+
     private fun downloadLanguageChoose() {
         val popupMenu = PopupMenu(this, btnDownloadLanguage)
         val autoDownloadLanguages = languageManager.getAutoDownloadLanguages()
@@ -173,17 +193,26 @@ class Grabar : AppCompatActivity() {
         popupMenu.setOnMenuItemClickListener { menuItem ->
             val position = menuItem.itemId
             val languageCode = additionalLanguageList[position].languageCode
-            languageManager.downloadLanguage(languageCode)
 
-            // Agregar idioma descargado a las listas de selección de entrada y salida
-            val downloadedLanguage = additionalLanguageList[position]
-            mainLanguageList.add(downloadedLanguage)
-            additionalLanguageList.removeAt(position)
+            progressBar.visibility = View.VISIBLE  // Mostrar el ProgressBar
+
+            languageManager.downloadLanguage(languageCode) { success ->
+                progressBar.visibility = View.GONE  // Ocultar el ProgressBar
+                if (success) {
+                    Toast.makeText(this, "Idioma descargado", Toast.LENGTH_SHORT).show()
+                    // Agregar idioma descargado a las listas de selección de entrada y salida
+                    val downloadedLanguage = additionalLanguageList[position]
+                    mainLanguageList.add(downloadedLanguage)
+                    additionalLanguageList.removeAt(position)
+                } else {
+                    Toast.makeText(this, "Error al descargar el idioma", Toast.LENGTH_SHORT).show()
+                }
+            }
 
             false
         }
     }
-//Cambio de idioma de entrada a salida y viceversa
+
     private fun switchLanguage() {
         val tempLanguageCode = sourceLanguageCode
         val tempLanguageTitle = sourceLanguageTitle
@@ -204,7 +233,7 @@ class Grabar : AppCompatActivity() {
             startTranslation()
         }
     }
-//Comenzar la traducción cargando el idioma de entrada y el idioma de salida elegido
+
     private fun startTranslation() {
         translatorOptions = TranslatorOptions.Builder()
             .setSourceLanguage(sourceLanguageCode)
@@ -212,7 +241,7 @@ class Grabar : AppCompatActivity() {
             .build()
 
         translator = Translation.getClient(translatorOptions)
-// descargar y que funcione tanto con Wifi como datos
+
         val downloadConditions = DownloadConditions.Builder()
             .requireWifi()
             .build()
@@ -226,7 +255,6 @@ class Grabar : AppCompatActivity() {
             }
     }
 
-    //Método de traducir para llamarlo
     private fun translateText(text: String) {
         translator.translate(text)
             .addOnSuccessListener { translatedText ->
@@ -237,8 +265,6 @@ class Grabar : AppCompatActivity() {
             }
     }
 
-
-    //Método para seleccionar el idioma de entrada para la traducción
     private fun sourceLanguageChoose() {
         val popupMenu = PopupMenu(this, btnEnterLanguage)
 
@@ -255,7 +281,7 @@ class Grabar : AppCompatActivity() {
             false
         }
     }
-//Método para seleccionar el idioma de salida para traduccir
+
     private fun targetLanguageChoose() {
         val popupMenu = PopupMenu(this, btnOutLanguage)
 
@@ -274,32 +300,27 @@ class Grabar : AppCompatActivity() {
         }
     }
 
-
-    //Función para hablar
     private fun askSpeechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "No reconoce la voz", Toast.LENGTH_LONG).show()
         } else {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-ES")
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Di algo")
-            startActivityForResult(intent, RQ_SPEECH_REC)
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK) {
             val result = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            if (result != null && result.isNotEmpty()) {
-                val recognizedText = result[0]
-                Log.d("RecognizedSpeech", "Original: $recognizedText")
-                val normalizedText = Normalizer.normalize(recognizedText, Normalizer.Form.NFD)
-                val pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
-                val cleanText = pattern.matcher(normalizedText).replaceAll("")
-                edText.text =  normalizedText  //para que tenga en cuenta las tildes y la ñ
+            val recognizedText = result?.get(0)?.trim() ?: ""
+            if (recognizedText.isNotEmpty()) {
+                edText.text = recognizedText  // Aquí se establece el texto en el TextView
+                Log.i(TAG, "Texto reconocido: $recognizedText")
             }
         }
     }

@@ -97,6 +97,15 @@
         android:layout_marginStart="11dp"
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="20dp"
-        android:fontFamily="@font/bon"
+        android:fontFamily="sans-serif"
         android:text="Texto de entrada" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:max="100" />
+
 </RelativeLayout>

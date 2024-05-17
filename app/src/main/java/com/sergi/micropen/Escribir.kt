@@ -6,11 +6,8 @@ import android.speech.tts.TextToSpeech
 import android.text.Editable
 import android.util.Log
 import android.view.Menu
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import com.google.mlkit.common.model.DownloadConditions
@@ -21,7 +18,6 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 import com.sergi.micropen.idioma.Idioma
 import java.util.Locale
 
-
 class Escribir : AppCompatActivity() {
 
     private lateinit var textEscrito: EditText
@@ -29,22 +25,23 @@ class Escribir : AppCompatActivity() {
     private lateinit var btnWrite: Button
 
     // Variables para el traductor
-    private lateinit var btnTranslate: Button  //  Botón para traducir
-    private lateinit var btnEnterLanguage: Button //Boton de entrada del idioma elegido
-    private lateinit var btnOutLanguage: Button  //Botón de idioma de salida elegido
-    private lateinit var mainLanguageList: ArrayList<Idioma>  //Idiomas principales
-    private lateinit var additionalLanguageList: ArrayList<Idioma> //idiomas a seleccionar
-    private var sourceLanguageCode = TranslateLanguage.SPANISH   // Código del idioma de entrada
-    private var sourceLanguageTitle = "Español"  // Título del idioma de entrada
-    private var targetLanguageCode = TranslateLanguage.ENGLISH   // Código del idioma de salida
-    private var targetLanguageTitle = "Inglés" // Título del idioma de salida
+    private lateinit var btnTranslate: Button
+    private lateinit var btnEnterLanguage: Button
+    private lateinit var btnOutLanguage: Button
+    private lateinit var mainLanguageList: ArrayList<Idioma>
+    private lateinit var additionalLanguageList: ArrayList<Idioma>
+    private var sourceLanguageCode = TranslateLanguage.SPANISH
+    private var sourceLanguageTitle = "Español"
+    private var targetLanguageCode = TranslateLanguage.ENGLISH
+    private var targetLanguageTitle = "Inglés"
     private lateinit var translatorOptions: TranslatorOptions
     private lateinit var translator: Translator
     private lateinit var progressDialog: ProgressDialog
     private var sourceLanguageText = ""
     private lateinit var btnSwitchLanguagesWriter: ImageView
     private lateinit var languageManager: LanguageManager
-    private lateinit var btnDownloadAdditionalLanguage: Button //Añadir idiomas
+    private lateinit var btnDownloadAdditionalLanguage: Button
+    private lateinit var progressBar: ProgressBar
 
     companion object {
         private const val TAG = "MAIN_TAG"
@@ -62,11 +59,14 @@ class Escribir : AppCompatActivity() {
         btnEnterLanguage = findViewById(R.id.btnEnterTextText)
         btnOutLanguage = findViewById(R.id.btnOutTextText)
         btnSwitchLanguagesWriter = findViewById(R.id.btnSwitchLanguagesWriter)
+        progressBar = findViewById(R.id.progressBar)
 
+        progressBar.max = 100
+        progressBar.progress = 0
 
         // Inicialización del administrador de idiomas y descarga de idiomas automáticos
         languageManager = LanguageManager(this)
-        languageManager.downloadAllLanguages()
+        downloadAllLanguages()
 
         // Inicialización de TextToSpeech
         textToSpeech = TextToSpeech(this) { status ->
@@ -92,7 +92,7 @@ class Escribir : AppCompatActivity() {
         }
 
         // Inicialización de la lista de idiomas
-        loadMainLanguages()  //idiomas que se descargan de forma predeterminada. Los europeos y los otros
+        loadMainLanguages()
         loadAdditionalLanguages()
 
         // Listeners para la funcionalidad de traducción
@@ -114,25 +114,44 @@ class Escribir : AppCompatActivity() {
             progressDialog.setCanceledOnTouchOutside(false)
         }
 
-        // Cambio de idiomas de entrada a salida o de salida a entrada
         btnSwitchLanguagesWriter.setOnClickListener {
             switchLanguages()
         }
 
-        // Descargar idiomas adicionales
         btnDownloadAdditionalLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma que quieres descargar", Toast.LENGTH_LONG).show()
             downloadLanguageChoose()
         }
     }
 
-    // Seleccionar idioma adicional para descargar
+    private fun downloadAllLanguages() {
+        progressBar.visibility = View.VISIBLE
+
+        languageManager.downloadAllLanguages(
+            { success, downloadedLanguages ->
+                if (success) {
+                    val progress = (downloadedLanguages * 100) / languageManager.getAutoDownloadLanguages().size
+                    progressBar.progress = progress
+                    if (downloadedLanguages == languageManager.getAutoDownloadLanguages().size) {
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(this, "Todos los paquetes de idioma se han descargado", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Error al descargar los paquetes de idioma", Toast.LENGTH_SHORT).show()
+                }
+            },
+            { progress ->
+                progressBar.progress = progress
+            }
+        )
+    }
+
     private fun downloadLanguageChoose() {
         val popupMenu = PopupMenu(this, btnDownloadAdditionalLanguage)
-        val autoDownloadLanguages = languageManager.getAutoDownloadLanguages() //Obtener la lista de los idiomas predeterminados
+        val autoDownloadLanguages = languageManager.getAutoDownloadLanguages()
 
         for (i in additionalLanguageList.indices) {
-            if (!autoDownloadLanguages.contains(additionalLanguageList[i].languageCode))  {
+            if (!autoDownloadLanguages.contains(additionalLanguageList[i].languageCode)) {
                 popupMenu.menu.add(Menu.NONE, i, i, additionalLanguageList[i].languageTitle)
             }
         }
@@ -142,18 +161,23 @@ class Escribir : AppCompatActivity() {
         popupMenu.setOnMenuItemClickListener { menuItem ->
             val position = menuItem.itemId
             val languageCode = additionalLanguageList[position].languageCode
-            languageManager.downloadLanguage(languageCode)
+            progressBar.visibility = View.VISIBLE  // Mostrar el ProgressBar
 
-            // añadir el idioma a la lista principal y borro el idioma de la lista selección
-            val downloadedLanguage = additionalLanguageList[position]
-            mainLanguageList.add(downloadedLanguage)
-            additionalLanguageList.removeAt(position)
-
+            languageManager.downloadLanguage(languageCode) { success ->
+                progressBar.visibility = View.GONE  // Ocultar el ProgressBar
+                if (success) {
+                    val downloadedLanguage = additionalLanguageList[position]
+                    mainLanguageList.add(downloadedLanguage)
+                    additionalLanguageList.removeAt(position)
+                    Toast.makeText(this, "Idioma descargado: ${downloadedLanguage.languageTitle}", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Error al descargar el idioma", Toast.LENGTH_SHORT).show()
+                }
+            }
             false
         }
     }
 
-    // Método para cambiar los idiomas de entrada y salida
     private fun switchLanguages() {
         val tempLanguageCode = sourceLanguageCode
         val tempLanguageTitle = sourceLanguageTitle
@@ -166,7 +190,7 @@ class Escribir : AppCompatActivity() {
         btnEnterLanguage.text = sourceLanguageTitle
         btnOutLanguage.text = targetLanguageTitle
     }
-//Probar si hay texto
+
     private fun validateData() {
         sourceLanguageText = textEscrito.text.toString().trim()
 
@@ -176,7 +200,7 @@ class Escribir : AppCompatActivity() {
             startTranslation()
         }
     }
-  //Empezar la traducción
+
     private fun startTranslation() {
         translatorOptions = TranslatorOptions.Builder()
             .setSourceLanguage(sourceLanguageCode)
@@ -197,7 +221,7 @@ class Escribir : AppCompatActivity() {
                 Log.e(TAG, "Error al descargar el modelo de traducción: $exception")
             }
     }
-  //Método para accionar la traducción.
+
     private fun translateText(text: String) {
         translator.translate(text)
             .addOnSuccessListener { translatedText ->
@@ -208,7 +232,6 @@ class Escribir : AppCompatActivity() {
             }
     }
 
-    // Elegir idioma de entrada
     private fun sourceLanguageChoose() {
         val popupMenu = PopupMenu(this, btnEnterLanguage)
 
@@ -226,7 +249,6 @@ class Escribir : AppCompatActivity() {
         }
     }
 
-    // Elegir idioma de salida
     private fun targetLanguageChoose() {
         val popupMenu = PopupMenu(this, btnOutLanguage)
 
@@ -245,7 +267,6 @@ class Escribir : AppCompatActivity() {
         }
     }
 
-    // Cargar los idiomas predeterminados
     private fun loadMainLanguages() {
         mainLanguageList = arrayListOf(
             Idioma(TranslateLanguage.ARABIC, Locale(TranslateLanguage.ARABIC).displayLanguage),
@@ -273,8 +294,6 @@ class Escribir : AppCompatActivity() {
         )
     }
 
-
-    //Cargar los idiomas addionales
     private fun loadAdditionalLanguages() {
         additionalLanguageList = ArrayList()
         val allLanguageCodeList = TranslateLanguage.getAllLanguages()

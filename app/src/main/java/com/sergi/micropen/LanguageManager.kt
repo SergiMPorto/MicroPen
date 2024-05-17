@@ -1,14 +1,13 @@
-
 package com.sergi.micropen
 
-import android.app.ProgressDialog
 import android.content.Context
-import android.widget.Toast
+import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 
 class LanguageManager(private val context: Context) {
+
     private val autoDownloadLanguageCodeList = listOf(
         TranslateLanguage.ARABIC,
         TranslateLanguage.ENGLISH,
@@ -33,53 +32,59 @@ class LanguageManager(private val context: Context) {
         TranslateLanguage.POLISH,
         TranslateLanguage.ROMANIAN
     )
-    private val totalLanguages = autoDownloadLanguageCodeList.size
-    private var languagesDownloaded = 0
-    private val progressDialog = ProgressDialog(context)
 
-    init {
-        progressDialog.setMessage("Descargando paquetes de idioma...")
-        progressDialog.setCancelable(false)
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-        progressDialog.max = totalLanguages
-        progressDialog.show()
-    }
 
-    fun downloadAllLanguages() {
-        autoDownloadLanguageCodeList.forEach { languageCode ->
-            downloadLanguage(languageCode)
+        fun getAutoDownloadLanguages(): List<String> {
+            return autoDownloadLanguageCodeList
         }
-    }
 
-    fun downloadLanguage(languageCode: String) {
-        val options = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.SPANISH)
-            .setTargetLanguage(languageCode)
-            .build()
+        fun downloadAllLanguages(
+            callback: (success: Boolean, downloadedLanguages: Int) -> Unit,
+            progressCallback: (progress: Int) -> Unit
+        ) {
+            val downloadConditions = DownloadConditions.Builder().requireWifi().build()
+            var languagesDownloaded = 0
+            val totalLanguages = autoDownloadLanguageCodeList.size
 
-        val translator = Translation.getClient(options)
+            for (languageCode in autoDownloadLanguageCodeList) {
+                val options = TranslatorOptions.Builder()
+                    .setSourceLanguage(TranslateLanguage.SPANISH)
+                    .setTargetLanguage(languageCode)
+                    .build()
 
-        translator.downloadModelIfNeeded().addOnSuccessListener {
-            onLanguageDownloaded(true, languageCode)
-        }.addOnFailureListener {
-            onLanguageDownloaded(false, languageCode)
-        }
-    }
+                val translator = Translation.getClient(options)
 
-    private fun onLanguageDownloaded(success: Boolean, languageCode: String) {
-        if (success) {
-            languagesDownloaded++
-            progressDialog.progress = languagesDownloaded
-            if (languagesDownloaded == totalLanguages) {
-                progressDialog.dismiss()
-                Toast.makeText(context, "Todos los paquetes de idioma se han descargado", Toast.LENGTH_SHORT).show()
+                translator.downloadModelIfNeeded(downloadConditions)
+                    .addOnSuccessListener {
+                        languagesDownloaded++
+                        val progress = (languagesDownloaded * 100) / totalLanguages
+                        progressCallback(progress)
+                        callback(true, languagesDownloaded)
+                    }
+                    .addOnFailureListener {
+                        callback(false, languagesDownloaded)
+                    }
             }
-        } else {
-            Toast.makeText(context, "Error al descargar el paquete de $languageCode", Toast.LENGTH_SHORT).show()
+        }
+
+        fun downloadLanguage(languageCode: String, callback: (Boolean) -> Unit) {
+            val options = TranslatorOptions.Builder()
+                .setSourceLanguage(TranslateLanguage.SPANISH)
+                .setTargetLanguage(languageCode)
+                .build()
+
+            val translator = Translation.getClient(options)
+
+            val downloadConditions = DownloadConditions.Builder()
+                .requireWifi()
+                .build()
+
+            translator.downloadModelIfNeeded(downloadConditions)
+                .addOnSuccessListener {
+                    callback(true)
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
         }
     }
-
-    fun getAutoDownloadLanguages(): List<String>{
-        return autoDownloadLanguageCodeList
-    }
-}

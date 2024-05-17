@@ -72,14 +72,23 @@ dependencies {
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
     //GoogleTranslate
-    implementation("com.google.mlkit:translate:17.0.2")
+    dependencies {
+        implementation ("com.google.mlkit:translate:16.1.2")
+      // Asegúrate de usar la versión correcta
+        implementation ("androidx.core:core-ktx:1.9.0")
+        implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    }
+
+
+
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+
 
     //Facebook
     implementation ("com.facebook.android:facebook-login:latest.release")
     implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
 
     //Coroutines
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.x.x")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+
 
 }
