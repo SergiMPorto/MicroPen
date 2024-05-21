@@ -77,13 +77,19 @@
             android:text="@string/idioma_salida"
             android:elevation="8dp"/>
 
+
         <Button
             android:id="@+id/btnDownloadLanguage"
             android:layout_width="136dp"
-            android:layout_marginTop="15dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:backgroundTint="@color/botones"
-            android:text="Seleccione Idioma" />
+            android:drawableStart="@drawable/descargado"
+            android:text="Seleccione Idioma"
+            android:elevation="8dp"/>
+
+
+
 
 
     </LinearLayout>
