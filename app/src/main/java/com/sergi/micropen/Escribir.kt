@@ -1,5 +1,6 @@
 package com.sergi.micropen
 
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -42,6 +43,8 @@ class Escribir : AppCompatActivity() {
     private lateinit var languageManager: LanguageManager
     private lateinit var btnDownloadAdditionalLanguage: Button
     private lateinit var progressBar: ProgressBar
+    private var downloadedLanguages: MutableSet<String> = mutableSetOf()
+
 
     companion object {
         private const val TAG = "MAIN_TAG"
@@ -60,13 +63,11 @@ class Escribir : AppCompatActivity() {
         btnOutLanguage = findViewById(R.id.btnOutTextText)
         btnSwitchLanguagesWriter = findViewById(R.id.btnSwitchLanguagesWriter)
         progressBar = findViewById(R.id.progressBar)
-
         progressBar.max = 100
         progressBar.progress = 0
 
         // Inicialización del administrador de idiomas y descarga de idiomas automáticos
         languageManager = LanguageManager(this)
-        downloadAllLanguages()
 
         // Inicialización de TextToSpeech
         textToSpeech = TextToSpeech(this) { status ->
@@ -92,13 +93,13 @@ class Escribir : AppCompatActivity() {
         }
 
         // Inicialización de la lista de idiomas
-        loadMainLanguages()
-        loadAdditionalLanguages()
+        loadLanguages()
+
 
         // Listeners para la funcionalidad de traducción
         btnOutLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma de salida", Toast.LENGTH_LONG).show()
-            targetLanguageChoose()
+            showOutputLanguageMenu()
         }
 
         btnTranslate.setOnClickListener {
@@ -108,7 +109,7 @@ class Escribir : AppCompatActivity() {
 
         btnEnterLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma de entrada", Toast.LENGTH_LONG).show()
-            sourceLanguageChoose()
+            showInputLanguageMenu()
             progressDialog = ProgressDialog(this)
             progressDialog.setTitle("Por favor espere")
             progressDialog.setCanceledOnTouchOutside(false)
@@ -120,62 +121,107 @@ class Escribir : AppCompatActivity() {
 
         btnDownloadAdditionalLanguage.setOnClickListener {
             Toast.makeText(this, "Elige el idioma que quieres descargar", Toast.LENGTH_LONG).show()
-            downloadLanguageChoose()
+            showLanguageDownloadDialog()
         }
     }
 
-    private fun downloadAllLanguages() {
-        progressBar.visibility = View.VISIBLE
-
-        languageManager.downloadAllLanguages(
-            { success, downloadedLanguages ->
-                if (success) {
-                    val progress = (downloadedLanguages * 100) / languageManager.getAutoDownloadLanguages().size
-                    progressBar.progress = progress
-                    if (downloadedLanguages == languageManager.getAutoDownloadLanguages().size) {
-                        progressBar.visibility = View.GONE
-                        Toast.makeText(this, "Todos los paquetes de idioma se han descargado", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Error al descargar los paquetes de idioma", Toast.LENGTH_SHORT).show()
-                }
-            },
-            { progress ->
-                progressBar.progress = progress
-            }
+    private fun loadLanguages() {
+        mainLanguageList = arrayListOf(
+            Idioma(TranslateLanguage.ENGLISH, "English"),
+            Idioma(TranslateLanguage.SPANISH, "Español")
         )
+
+        val allLanguageCodes = TranslateLanguage.getAllLanguages()
+        additionalLanguageList = ArrayList()
+
+        allLanguageCodes.forEach { languageCode ->
+            if (mainLanguageList.none { it.languageCode == languageCode }) {
+                val languageTitle = Locale(languageCode).displayLanguage
+                additionalLanguageList.add(Idioma(languageCode, languageTitle, false))
+            }
+        }
+        Log.d(TAG, "mainLanguageList: $mainLanguageList")
+        Log.d(TAG, "additionalLanguageList: $additionalLanguageList")
     }
 
-    private fun downloadLanguageChoose() {
-        val popupMenu = PopupMenu(this, btnDownloadAdditionalLanguage)
-        val autoDownloadLanguages = languageManager.getAutoDownloadLanguages()
+    private fun showInputLanguageMenu() {
+        val popupMenu = PopupMenu(this, btnEnterLanguage)
+        mainLanguageList.forEach { lang ->
+            popupMenu.menu.add(lang.languageTitle)
+        }
+        popupMenu.setOnMenuItemClickListener { item ->
+            val selectedLang = mainLanguageList.first { it.languageTitle == item.title }
+            sourceLanguageCode = selectedLang.languageCode
+            sourceLanguageTitle = selectedLang.languageTitle
+            btnEnterLanguage.text = selectedLang.languageTitle
+            true
+        }
+        popupMenu.show()
+    }
 
-        for (i in additionalLanguageList.indices) {
-            if (!autoDownloadLanguages.contains(additionalLanguageList[i].languageCode)) {
-                popupMenu.menu.add(Menu.NONE, i, i, additionalLanguageList[i].languageTitle)
-            }
+    private fun showOutputLanguageMenu() {
+        val popupMenu = PopupMenu(this, btnOutLanguage)
+        mainLanguageList.forEach { lang ->
+            popupMenu.menu.add(lang.languageTitle)
+        }
+        popupMenu.setOnMenuItemClickListener { item ->
+            val selectedLang = mainLanguageList.first { it.languageTitle == item.title }
+            targetLanguageCode = selectedLang.languageCode
+            targetLanguageTitle = selectedLang.languageTitle
+            btnOutLanguage.text = selectedLang.languageTitle
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun showLanguageDownloadDialog() {
+        if (additionalLanguageList.isEmpty()) {
+            Toast.makeText(this, "No hay idiomas disponibles para descargar", Toast.LENGTH_LONG).show()
+            return
+        }
+        val adapter = LanguageAdapter(this, additionalLanguageList, downloadedLanguages)
+        val listView = ListView(this)
+        listView.adapter = adapter
+
+        AlertDialog.Builder(this).apply {
+            setTitle("Download Languages")
+            setView(listView)
+            setNegativeButton("Cancel", null)
+            create()
+            show()
         }
 
-        popupMenu.show()
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedLanguage = additionalLanguageList[position]
+            downloadLanguage(selectedLanguage, position, adapter)
+        }
+    }
 
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            val position = menuItem.itemId
-            val languageCode = additionalLanguageList[position].languageCode
-            progressBar.visibility = View.VISIBLE  // Mostrar el ProgressBar
-
-            languageManager.downloadLanguage(languageCode) { success ->
-                progressBar.visibility = View.GONE  // Ocultar el ProgressBar
+    private fun downloadLanguage(language: Idioma, position: Int, adapter: LanguageAdapter) {
+        if (!downloadedLanguages.contains(language.languageCode)) {
+            progressDialog.show()
+            languageManager.downloadLanguage(language.languageCode) { success ->
+                progressDialog.dismiss()
                 if (success) {
-                    val downloadedLanguage = additionalLanguageList[position]
-                    mainLanguageList.add(downloadedLanguage)
-                    additionalLanguageList.removeAt(position)
-                    Toast.makeText(this, "Idioma descargado: ${downloadedLanguage.languageTitle}", Toast.LENGTH_SHORT).show()
+                    downloadedLanguages.add(language.languageCode)
+                    language.isDownloaded = true
+                    mainLanguageList.add(language) // <- Agregar a mainLanguageList
+                    runOnUiThread {
+                        adapter.notifyDataSetChanged()
+                        updateLanguageMenus() // <- Cambio aquí
+                    }
+                    Toast.makeText(this, "${language.languageTitle} downloaded", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "Error al descargar el idioma", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to download ${language.languageTitle}", Toast.LENGTH_SHORT).show()
                 }
             }
-            false
         }
+    }
+
+    // Método para actualizar los menús de selección de idiomas
+    private fun updateLanguageMenus() {
+        btnEnterLanguage.setOnClickListener { showInputLanguageMenu() }
+        btnOutLanguage.setOnClickListener { showOutputLanguageMenu() }
     }
 
     private fun switchLanguages() {
@@ -230,81 +276,5 @@ class Escribir : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error al traducir el texto: $exception")
             }
-    }
-
-    private fun sourceLanguageChoose() {
-        val popupMenu = PopupMenu(this, btnEnterLanguage)
-
-        for (i in mainLanguageList.indices) {
-            popupMenu.menu.add(Menu.NONE, i, i, mainLanguageList[i].languageTitle)
-        }
-        popupMenu.show()
-
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            val position = menuItem.itemId
-            sourceLanguageCode = mainLanguageList[position].languageCode
-            sourceLanguageTitle = mainLanguageList[position].languageTitle
-            btnEnterLanguage.text = sourceLanguageTitle
-            false
-        }
-    }
-
-    private fun targetLanguageChoose() {
-        val popupMenu = PopupMenu(this, btnOutLanguage)
-
-        for (i in mainLanguageList.indices) {
-            popupMenu.menu.add(Menu.NONE, i, i, mainLanguageList[i].languageTitle)
-        }
-
-        popupMenu.show()
-
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            val position = menuItem.itemId
-            targetLanguageCode = mainLanguageList[position].languageCode
-            targetLanguageTitle = mainLanguageList[position].languageTitle
-            btnOutLanguage.text = targetLanguageTitle
-            false
-        }
-    }
-
-    private fun loadMainLanguages() {
-        mainLanguageList = arrayListOf(
-            Idioma(TranslateLanguage.ARABIC, Locale(TranslateLanguage.ARABIC).displayLanguage),
-            Idioma(TranslateLanguage.ENGLISH, Locale(TranslateLanguage.ENGLISH).displayLanguage),
-            Idioma(TranslateLanguage.CHINESE, Locale(TranslateLanguage.CHINESE).displayLanguage),
-            Idioma(TranslateLanguage.JAPANESE, Locale(TranslateLanguage.JAPANESE).displayLanguage),
-            Idioma(TranslateLanguage.GERMAN, Locale(TranslateLanguage.GERMAN).displayLanguage),
-            Idioma(TranslateLanguage.FRENCH, Locale(TranslateLanguage.FRENCH).displayLanguage),
-            Idioma(TranslateLanguage.ITALIAN, Locale(TranslateLanguage.ITALIAN).displayLanguage),
-            Idioma(TranslateLanguage.SPANISH, Locale(TranslateLanguage.SPANISH).displayLanguage),
-            Idioma(TranslateLanguage.PORTUGUESE, Locale(TranslateLanguage.PORTUGUESE).displayLanguage),
-            Idioma(TranslateLanguage.NORWEGIAN, Locale(TranslateLanguage.NORWEGIAN).displayLanguage),
-            Idioma(TranslateLanguage.GALICIAN, Locale(TranslateLanguage.GALICIAN).displayLanguage),
-            Idioma(TranslateLanguage.RUSSIAN, Locale(TranslateLanguage.RUSSIAN).displayLanguage),
-            Idioma(TranslateLanguage.CATALAN, Locale(TranslateLanguage.CATALAN).displayLanguage),
-            Idioma(TranslateLanguage.FINNISH, Locale(TranslateLanguage.FINNISH).displayLanguage),
-            Idioma(TranslateLanguage.GREEK, Locale(TranslateLanguage.GREEK).displayLanguage),
-            Idioma(TranslateLanguage.BULGARIAN, Locale(TranslateLanguage.BULGARIAN).displayLanguage),
-            Idioma(TranslateLanguage.HUNGARIAN, Locale(TranslateLanguage.HUNGARIAN).displayLanguage),
-            Idioma(TranslateLanguage.DUTCH, Locale(TranslateLanguage.DUTCH).displayLanguage),
-            Idioma(TranslateLanguage.SWEDISH, Locale(TranslateLanguage.SWEDISH).displayLanguage),
-            Idioma(TranslateLanguage.DANISH, Locale(TranslateLanguage.DANISH).displayLanguage),
-            Idioma(TranslateLanguage.POLISH, Locale(TranslateLanguage.POLISH).displayLanguage),
-            Idioma(TranslateLanguage.ROMANIAN, Locale(TranslateLanguage.ROMANIAN).displayLanguage)
-        )
-    }
-
-    private fun loadAdditionalLanguages() {
-        additionalLanguageList = ArrayList()
-        val allLanguageCodeList = TranslateLanguage.getAllLanguages()
-        val mainLanguageCodes = mainLanguageList.map { it.languageCode }
-
-        for (languageCode in allLanguageCodeList) {
-            if (!mainLanguageCodes.contains(languageCode)) {
-                val languageTitle = Locale(languageCode).displayLanguage
-                val modelLanguage = Idioma(languageCode, languageTitle)
-                additionalLanguageList.add(modelLanguage)
-            }
-        }
     }
 }
