@@ -30,6 +30,10 @@
 
     </style>
 
+    <style name="AppTheme.TexToDigital" parent="Theme.MaterialComponents.Light.NoActionBar" />
+
+    <style name="AppTheme.DrawingView" parent= "Theme.MaterialComponents.Light.NoActionBar" />
+
     <style name="Theme.MicroPen" parent="Base.Theme.MicroPen" />
 
 

@@ -2,6 +2,7 @@ package com.sergi.micropen
 
 import android.app.AlertDialog
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.text.Editable
@@ -44,6 +45,7 @@ class Escribir : AppCompatActivity() {
     private lateinit var btnDownloadAdditionalLanguage: Button
     private lateinit var progressBar: ProgressBar
     private var downloadedLanguages: MutableSet<String> = mutableSetOf()
+    private lateinit var escrituraTactil : Button
 
 
     companion object {
@@ -63,8 +65,13 @@ class Escribir : AppCompatActivity() {
         btnOutLanguage = findViewById(R.id.btnOutTextText)
         btnSwitchLanguagesWriter = findViewById(R.id.btnSwitchLanguagesWriter)
         progressBar = findViewById(R.id.progressBar)
+        escrituraTactil = findViewById(R.id.escrituraTactil)
         progressBar.max = 100
         progressBar.progress = 0
+
+        //Obtener el texto escrito a dedo por un intent
+        val recognizedText = intent.getStringExtra("RECOGNIZED_TEXT")
+        textEscrito.setText(recognizedText)
 
         // Inicialización del administrador de idiomas y descarga de idiomas automáticos
         languageManager = LanguageManager(this)
@@ -92,9 +99,17 @@ class Escribir : AppCompatActivity() {
             }
         }
 
+
+
         // Inicialización de la lista de idiomas
         loadLanguages()
 
+      // Pasar a la pantalla para escribir en tactil
+
+        escrituraTactil.setOnClickListener {
+            val intent = Intent(this, TextToDigital::class.java)
+            startActivity(intent)
+        }
 
         // Listeners para la funcionalidad de traducción
         btnOutLanguage.setOnClickListener {
@@ -276,5 +291,7 @@ class Escribir : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error al traducir el texto: $exception")
             }
+
+
     }
 }

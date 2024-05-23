@@ -18,50 +18,56 @@
         android:theme="@style/Theme.MicroPen"
         tools:targetApi="31">
 
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
+        <activity
+            android:name=".TextToDigital"
+            android:exported="true"
+            android:theme="@style/AppTheme.TexToDigital">
 
+        </activity>
 
-
-
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
 
         <activity
             android:name=".Perfil"
             android:exported="false"
-            android:theme="@style/AppTheme.Perfil"/>
+            android:theme="@style/AppTheme.Perfil" />
         <activity
             android:name=".Recuperar"
             android:exported="false"
-            android:theme="@style/AppTheme.Recuperar"/>
+            android:theme="@style/AppTheme.Recuperar" />
         <activity
             android:name=".Login"
             android:exported="false"
-            android:theme="@style/AppTheme.Login"></activity>
-
+            android:theme="@style/AppTheme.Login" />
         <activity
             android:name=".SplashMicroPen"
             android:exported="true"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Escribir"
             android:exported="false"
-            android:theme="@style/AppTheme.Escribir"/>
+            android:theme="@style/AppTheme.Escribir" />
         <activity
             android:name=".Grabar"
             android:exported="false"
-            android:theme="@style/AppTheme.Grabar"/>
+            android:theme="@style/AppTheme.Grabar" />
         <activity
             android:name=".Home"
             android:exported="true"
-            android:theme="@style/AppTheme.Home"/>
-
-
+            android:theme="@style/AppTheme.Home" />
+        <activity android:name="DrawingView"
+            android:exported="false"
+            android:theme="@style/AppTheme.DrawingView"/>
     </application>
 
 </manifest>
