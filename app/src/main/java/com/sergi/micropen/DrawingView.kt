@@ -74,4 +74,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             strokeBuilder.build()
         }
     }
+
+    //Añadí un método para borrar el contenido.
+
+    fun deleteTrazos(){
+        path.reset() //Resetear los puntos que hemos escritos
+        strokeList.clear() //limpiar la lista de trazos
+        canvas.drawColor(Color.WHITE) // limpiar Canvas y pintarlo del mismo color que tiene
+        invalidate() // Le dice al sistema que donde se escribió cambió.
+    }
 }

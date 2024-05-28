@@ -4,6 +4,7 @@ package com.sergi.micropen
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -52,7 +53,7 @@ class Login : AppCompatActivity() {
         FacebookSdk.sdkInitialize(applicationContext)
 
         val btnLogin: ImageView = findViewById(R.id.login)
-        val btnRegistro: TextView = findViewById(R.id.botonRegistro)
+        val btnRegistro: Button = findViewById(R.id.botonRegistro)
         val recuperar: TextView= findViewById(R.id.recuperar)
 
         btnLogin.setOnClickListener {

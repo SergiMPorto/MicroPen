@@ -7,6 +7,7 @@
 
     <Button
         android:id="@+id/BtnRecognize"
+        android:backgroundTint="@color/botones"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Reconociendo texto" />
@@ -16,7 +17,42 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/BtnRecognize"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        />
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="-7dp"
+        android:layout_marginBottom="7dp" />
 
+    <Button
+        android:id="@+id/btnBorrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="123dp"
+        android:backgroundTint="@color/botones"
+        android:text="Borrar" />
+
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:max="100" />
+
+    <TextView
+        android:id="@+id/progressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/progressBar"
+        android:visibility="gone"
+        android:text="0%"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"/>
 </RelativeLayout>
+
