@@ -1,9 +1,13 @@
 package com.sergi.micropen
-
+import android.Manifest
+import android.Manifest.permission.CAMERA
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
 import android.text.Editable
 import android.util.Log
@@ -12,11 +16,15 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+
 import com.sergi.micropen.idioma.Idioma
 import java.util.Locale
 
@@ -46,10 +54,13 @@ class Escribir : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private var downloadedLanguages: MutableSet<String> = mutableSetOf()
     private lateinit var escrituraTactil : Button
+    private lateinit var btnEscanear : Button
 
 
     companion object {
         private const val TAG = "MAIN_TAG"
+        private const val REQUEST_IMAGE_CAPTURE = 1
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,10 +79,16 @@ class Escribir : AppCompatActivity() {
         escrituraTactil = findViewById(R.id.escrituraTactil)
         progressBar.max = 100
         progressBar.progress = 0
+        btnEscanear = findViewById(R.id.btnEscanear)
 
         //Obtener el texto escrito a dedo por un intent
         val recognizedText = intent.getStringExtra("RECOGNIZED_TEXT")
         textEscrito.setText(recognizedText)
+
+
+      /*  val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val REQUEST_IMAGE_CAPTURE = 0
+        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)*/
 
         // Inicialización del administrador de idiomas y descarga de idiomas automáticos
         languageManager = LanguageManager(this)
@@ -100,11 +117,10 @@ class Escribir : AppCompatActivity() {
         }
 
 
-
         // Inicialización de la lista de idiomas
         loadLanguages()
 
-      // Pasar a la pantalla para escribir en tactil
+        // Pasar a la pantalla para escribir en tactil
 
         escrituraTactil.setOnClickListener {
             val intent = Intent(this, TextToDigital::class.java)
@@ -138,6 +154,57 @@ class Escribir : AppCompatActivity() {
             Toast.makeText(this, "Elige el idioma que quieres descargar", Toast.LENGTH_LONG).show()
             showLanguageDownloadDialog()
         }
+        btnEscanear.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent()
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+            }
+
+          
+        }
+
+
+
+    }
+
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent()
+            } else {
+                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            val image = FirebaseVisionImage.fromBitmap(imageBitmap)
+            recognizeText(image)
+        }
+    }
+
+    private fun recognizeText(image: FirebaseVisionImage) {
+        val recognizer = com.google.firebase.ml.vision.FirebaseVision.getInstance().onDeviceTextRecognizer
+        recognizer.processImage(image)
+            .addOnSuccessListener { visionText ->
+                val recognizedText = visionText.text
+                textEscrito.setText(recognizedText)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error al reconocer el texto: $exception")
+            }
     }
 
     private fun loadLanguages() {
@@ -294,4 +361,6 @@ class Escribir : AppCompatActivity() {
 
 
     }
+
+
 }

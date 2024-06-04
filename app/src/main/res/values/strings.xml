@@ -12,6 +12,9 @@
     <string name="facebook_client_token">56789</string>
     <string name="facebook_app_id">395820610028538</string>
     <string name="fb_login_protocol_scheme">fb395820610028538</string>
+    <string name="escanear">Escanear</string>
+    <string name="escritura_tactil">Escritura tactil</string>
+    <string name="seleccione_idioma">Seleccione Idioma</string>
 
 
 </resources>

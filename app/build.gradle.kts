@@ -57,6 +57,8 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("org.jetbrains:annotations:15.0")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -80,8 +82,16 @@ dependencies {
         implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
     }
 
+    //Escanear QR
+    dependencies {
 
+        implementation ("com.google.mlkit:text-recognition:16.0.0")
+        implementation ("com.google.mlkit:common:17.2.0")
+    }
 
+    // Usa una versión anterior de play-services-vision
+    implementation ("com.google.android.gms:play-services-vision:20.1.3")
+    implementation ("com.google.firebase:firebase-ml-vision:24.0.3")
     implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 
     //Pasar texto escrito en dedo
