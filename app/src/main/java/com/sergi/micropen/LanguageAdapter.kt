@@ -31,4 +31,6 @@ class LanguageAdapter(
 
         return view
     }
+
+
 }

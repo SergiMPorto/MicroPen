@@ -53,8 +53,12 @@ class Escribir : AppCompatActivity() {
     private lateinit var btnDownloadAdditionalLanguage: Button
     private lateinit var progressBar: ProgressBar
     private var downloadedLanguages: MutableSet<String> = mutableSetOf()
+    //Escribir en tactil
     private lateinit var escrituraTactil : Button
+    //Escanear
     private lateinit var btnEscanear : Button
+    //Location
+    private lateinit var btnLocation : Button
 
 
     companion object {
@@ -66,6 +70,9 @@ class Escribir : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_escribir)
+
+        val defaultLanguageCode = intent.getStringExtra("LANGUAGE_CODE") ?: "en" // 'en' es un fallback predeterminado
+        ensureLanguageIsAvailable(defaultLanguageCode)
 
         // Inicialización de variables
         textEscrito = findViewById(R.id.TextoEscrito)
@@ -80,6 +87,7 @@ class Escribir : AppCompatActivity() {
         progressBar.max = 100
         progressBar.progress = 0
         btnEscanear = findViewById(R.id.btnEscanear)
+
 
         //Obtener el texto escrito a dedo por un intent
         val recognizedText = intent.getStringExtra("RECOGNIZED_TEXT")
@@ -167,6 +175,39 @@ class Escribir : AppCompatActivity() {
 
 
     }
+//Verificar si el idioma esta disponible tras la localización
+    private fun ensureLanguageIsAvailable(languageCode: String) {
+        if (!isLanguageDownloaded(languageCode)) {
+            downloadLanguage(languageCode)
+        }
+    }
+
+    private fun isLanguageDownloaded(languageCode: String): Boolean {
+        // Comprobar si el idioma ya está descargado
+        return downloadedLanguages.contains(languageCode)
+    }
+
+
+    private fun downloadLanguage(languageCode: String) {
+        val translatorOptions = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH) // Asumiendo inglés como origen para simplificar
+            .setTargetLanguage(languageCode)
+            .build()
+
+        val translator = Translation.getClient(translatorOptions)
+        val conditions = DownloadConditions.Builder().requireWifi().build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                downloadedLanguages.add(languageCode)
+                Toast.makeText(this, "Idioma $languageCode descargado correctamente.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al descargar el idioma $languageCode.", Toast.LENGTH_SHORT).show()
+            }
+    }
+    //Escanear
+
 
     private fun dispatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

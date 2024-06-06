@@ -114,7 +114,7 @@ class Login : AppCompatActivity() {
     }
 
     private fun handleSuccessfulSignIn() {
-        // No se necesita descargar los modelos de idioma aquí
+
     }
 
     private fun signIn(email: String, password: String) {
@@ -130,7 +130,7 @@ class Login : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = firebaseAuth.currentUser
                     Toast.makeText(this, "Bienvenido", Toast.LENGTH_SHORT).show()
-                    Toast.makeText(this,"Descargando idiomas", Toast.LENGTH_LONG).show()
+
                     val intent = Intent(this, Home::class.java)
                     startActivity(intent)
                     finish()

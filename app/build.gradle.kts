@@ -103,11 +103,14 @@ dependencies {
     implementation ("com.facebook.android:facebook-android-sdk:[4,5)")
 
     //Coroutines
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+
+
+    //Location
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     dependencies {
-        // ... other androidx dependencies
 
-        // add the dependency for the Google AI client SDK for Android
         implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
     }
 

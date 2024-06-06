@@ -53,13 +53,37 @@
             app:layout_constraintTop_toBottomOf="@id/Record"
             app:layout_constraintWidth_percent="0.45" />
 
+        <Button
+            android:id="@+id/localitation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="158dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="159dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/botones"
+            android:text="Localización"
+            app:layout_constraintBottom_toTopOf="@+id/text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Record" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="178dp"
+            android:layout_marginTop="23dp"
+            android:layout_marginEnd="175dp"
+            android:layout_marginBottom="58dp"
+            android:text="Tu localización"
+            app:layout_constraintBottom_toTopOf="@+id/Record"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        app:menu="@menu/menu" />
+
 
 </androidx.drawerlayout.widget.DrawerLayout>
